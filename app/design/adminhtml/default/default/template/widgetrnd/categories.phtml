@@ -1,0 +1,177 @@
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl('checktree.css') ?>" type="text/css"/>
+<script type="text/javascript" src="<?php echo $this->getSkinUrl('checktree.js') ?>"></script>
+<script type="text/javascript">var checkmenu = new CheckTree('checkmenu');</script>
+
+<h4 class="icon-head head-categories"><?php echo 'Product Categories'; ?></h4>
+
+<?php
+$collection = Mage::getModel('catalog/category')
+->load(2)->getCollection()
+->addAttributeToSelect('*')
+->addAttributeToSort('position')
+->addAttributeToSelect('is_active');;
+
+$arr = array();
+
+$arr = (explode('/', Mage::getUrl('', array('_current' => true))));
+$widgetId = array_search('instance_id', $arr) + 1;
+$widgetId = $arr[$widgetId];
+
+$widget = Mage::getModel('widget/widget_instance');
+$widget->load($widgetId);
+$arr = array_keys($widget->getWidgetParameters());
+?>
+
+<div class="checkbox">
+	<ul id="tree-checkmenu" class="checktree"><?php
+		$num = array();
+		$num_cat = array();
+		foreach($collection as $level1){
+			if ($level1->getLevel() == 2) {
+				foreach ($collection as $level2){
+					if ($level2->getLevel() == 3) {
+						if ($level2->getParentId() == $level1->getId ()) {
+							$num_last = 0;
+							foreach($collection as $level3){
+								if ($level3->getLevel() == 4) {
+									if ($level3->getParentId () == $level2->getId ()) {
+										$num_last++;
+									}
+								}
+							}
+							$num_cat[] = $num_last;
+						}	
+					}
+				}
+				$num[] = $num_cat;
+				$num_cat = array();
+			}
+		}
+		$level1 = 0; $level2 = 0;
+		foreach ( $collection as $col ) {
+				if ($col->getLevel () == 2) {
+					if (count($num) == $level1 + 1) { 
+						if (empty($num[$level1])) { ?><li class="last" ><?php }
+						else { ?><li class="last" id="show-<?php echo $col->getName()?>"><?php } 
+					}
+					else { 
+						if (empty($num[$level1])){ ?><li><?php } 
+						else { ?><li id="show-<?php echo $col->getName()?>"><?php }						
+					} 
+					if (empty($num[$level1])){ 
+						?><input type="checkbox" name="parameters[<?php echo $col->getId();?>]"
+						<?php foreach ($arr as $v){
+								if ($v == $col->getId()) { ?> checked <?php break; }
+							} 
+						?>/><?php 
+					}
+					else { 
+						?><input id="check-<?php echo $col->getName()?>" type="checkbox" name="parameters[<?php echo $col->getId()?>]"
+						<?php foreach ($arr as $v){
+								if ($v == $col->getId()) { ?> checked <?php break; }
+							} 
+						?>/><?php 
+					}
+					echo $col->getName();
+					echo ' - id = ';
+					echo $col->getId() . ';';
+					if (!empty($num[$level1])) { ?><span id="count-<?php echo $col->getName()?>" class="count"></span> <?php } 
+					
+					foreach ($collection as $col2 ) {
+						if ($col2->getLevel () == 3) {
+							if ($col2->getParentId () == $col->getId ()) {
+								?><ul id="tree-<?php echo $col->getName()?>"><?php
+								break;
+							}						
+						}
+					}
+					
+					$level2 = 0;
+					foreach ( $collection as $col2 ) { 
+						if ($col2->getLevel () == 3) { 
+							if ($col2->getParentId () == $col->getId ()) {
+								if (count($num[$level1]) == $level2 + 1) {
+									if($num[$level1][$level2] == 0) { ?><li class="last" ><?php }
+									else { ?><li class="last" id="show-<?php echo $col2->getName()?>"><?php }  
+								}
+								else { 
+									if($num[$level1][$level2] == 0) { ?><li><?php }
+									else { ?><li id="show-<?php echo $col2->getName()?>"><?php } 
+								} 
+								if ($num[$level1][$level2] == 0) { ?><input type="checkbox" name="parameters[<?php echo $col2->getId()?>]"
+									<?php 
+									foreach ($arr as $v){
+										if ($v == $col2->getId()) { ?> checked <?php break; }
+									} 
+									?>/><?php }
+								else { ?><input id="check-<?php echo $col2->getName()?>" type="checkbox" name="parameters[<?php echo $col2->getId()?>]"
+									<?php 
+									foreach ($arr as $v){
+										if ($v == $col2->getId()) { ?> checked <?php break; }
+									} 
+									?>/><?php }
+								echo $col2->getName();
+								echo ' - id = ';
+								echo $col2->getId() . ';';
+								if ($num[$level1][$level2] != 0) { ?><span id="count-<?php echo $col2->getName()?>" class="count"></span> <?php } 
+								
+								foreach ( $collection as $col3 ) {
+									if ($col3->getLevel () == 4) {
+										if ($col3->getParentId () == $col2->getId ()) {
+											?><ul id="tree-<?php echo $col2->getName()?>"><?php
+											break;
+										}
+									}
+								}
+								 
+								foreach ( $collection as $col3 ) {
+									if ($col3->getLevel () == 4) {
+										if ($col3->getParentId () == $col2->getId ()) {
+											$num[$level1][$level2]--;
+											if ($num[$level1][$level2] == 0) { ?><li class="last"><?php } 
+											else { ?><li><?php } ?>
+											<input type="checkbox" name="parameters[<?php echo $col3->getId()?>]" 
+											<?php 
+												foreach ($arr as $v){
+													if ($v == $col3->getId()) { ?> checked <?php break; }
+												} 
+											?>/><?php
+											echo $col3->getName();
+											echo ' - id = ';
+											echo $col3->getId() . ';';
+											?></li><?php
+										}
+									}
+								}
+								
+								foreach ( $collection as $col3 ) {
+									if ($col3->getLevel () == 4) {
+										if ($col3->getParentId () == $col2->getId ()) {
+											?></ul><?php
+											break;
+											}
+										}
+									}
+								
+								?></li><?php
+								$level2++;
+							}
+						}
+					}
+					
+					foreach ($collection as $col2 ) {
+						if ($col2->getLevel () == 3) {
+							if ($col2->getParentId () == $col->getId ()) {
+								?></ul><?php
+								break;
+							}
+						}
+					}
+	
+					?></li><?php
+					$level1++;
+				}
+			}
+	?></ul>
+</div>
+<hr />

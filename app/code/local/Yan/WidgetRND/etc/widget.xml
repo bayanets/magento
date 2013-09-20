@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget>
+	<widgetrnd_widget type="widgetrnd/widget" translate="widgetrnd widget" module="widgetrnd">
+		<name>YAN Random Items</name>
+		<description>YAN Random Items Page</description>
+		<parameters>
+			<title translate="label">
+				<label>Quantity elements on the page</label>
+				<visible>1</visible>
+				<type>select</type>
+				<values>
+					<default translate="label">
+						<label>1</label>
+						<value>1</value>
+					</default>
+					<two_items translate="label">
+						<label>2</label>
+						<value>2</value>
+					</two_items>
+					<three_items translate="label">
+						<label>3</label>
+						<value>3</value>
+					</three_items>
+					<six_items translate="label">
+						<label>6</label>
+						<value>6</value>
+					</six_items>
+					<nine_items translate="label">
+						<label>9</label>
+						<value>9</value>
+					</nine_items>
+				</values>
+			</title>
+			<category translate="label">
+				<visible>1</visible>
+				<type>category</type>
+			</category>
+		</parameters>
+	</widgetrnd_widget>
+</widget>
