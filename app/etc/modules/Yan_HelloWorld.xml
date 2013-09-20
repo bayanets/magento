@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+         <modules>
+                <Yan_HelloWorld>
+                        <active>true</active>
+                        <codePool>local</codePool>
+                </Yan_HelloWorld>
+         </modules>
+</config>
